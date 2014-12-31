@@ -1,0 +1,40 @@
+<beans xmlns="http://www.springframework.org/schema/beans"  
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"  
+    xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"  
+    xsi:schemaLocation="http://www.springframework.org/schema/beans  
+           http://www.springframework.org/schema/beans/spring-beans-3.2.xsd  
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd  
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd  
+            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">  
+  
+		<bean lazy-init="false" id="constantsUtils" class="cn.lfy.common.utils.ConstantsUtils">
+			
+			<property name="ROLE_TYPE_MAP">
+				<map>
+					<description>注入角色权限类型全局常量值</description>
+					<entry key="1" value="所有权限" value-type="java.lang.String"/>
+					<entry key="2" value="局部权限" value-type="java.lang.String"/>
+				</map>
+			</property>
+			
+			<property name="USER_STATUS_MAP">
+				<map>
+					<description>注入用户状态全局常量值</description>
+					<entry key="1" value="可用" value-type="java.lang.String"/>
+					<entry key="2" value="禁用" value-type="java.lang.String"/>
+				</map>
+			</property>
+
+			<property name="ANNUNCIATE_STATUS_MAP">
+			    <map>
+			      <description>注入通告状态全局常量值</description>
+			      <entry key="1" value="有效" value-type="java.lang.String"></entry>
+			      <entry key="2" value="无效" value-type="java.lang.String"></entry>
+			    </map>
+			
+			</property>
+			
+			
+		</bean>  		
+  		
+</beans>  

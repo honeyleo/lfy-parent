@@ -1,0 +1,24 @@
+/*------------------- txt -------------------*/
+.bold {font-weight: bold;}
+.txtRed {color: #c00;}
+.txtBlue {color: #2b8ad0;}
+.txtGreen {color: #069213;}
+.txtGray {color: #999;}
+.size24 {font: normal 25px/35px "Microsoft Yahei"; color: #1b63bc;}
+.size14 {font-size: 14px;}
+.size15{font: normal 16px/22px "Microsoft Yahei"; color: #1b63bc;}
+.size16{line-height:25px;width:800px;font-size:15px; height: 500px;border: 0px solid #bacbdf;margin: 10px 0 0 11px;margin-top:30px;}
+.size17{height: 25px;width: 400px; border: 0px solid red;}
+
+.halltips {
+background: #aaa;
+color:blue;
+display: none;
+float: left;
+margin-left: 240px;
+opacity: 0.95;
+position: absolute;
+width: 550px;
+z-index: 999;
+line-height: 50px;
+}

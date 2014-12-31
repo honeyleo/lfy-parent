@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="cn.lfy.auth.dao.admin.MenuDao">
+    
+    
+    <select id="queryFirstMenuDao" parameterType="searchDTO" resultType="menuDTO">
+		<![CDATA[
+			SELECT id as id, name as name
+			FROM menu_1  
+			WHERE 1 = 1 
+		]]>
+		<include refid="filter_sql"/>
+		<include refid="order_sql"/>
+    </select>
+    
+    <select id="querySecondMenuDao" parameterType="searchDTO" resultType="menuDTO">
+		<![CDATA[
+			SELECT id as id, name as name, parentId as parentId, defalutUrl as url, rel 
+			FROM menu_2  
+			WHERE 1 = 1 
+		]]>
+		<include refid="filter_sql"/>
+		<include refid="order_sql"/>
+    </select>   
+    
+    <select id="queryThreeMenuDao" parameterType="searchDTO" resultType="menuDTO">
+		<![CDATA[
+			SELECT id as id, name as name, parentId as parentId, url as url 
+			FROM menu_3  
+			WHERE 1 = 1 
+		]]>
+		<include refid="filter_sql"/>
+    </select>  
+    
+    <select id="queryThreeMenuByUserIdDao" parameterType="searchDTO" resultType="menuDTO">
+		<![CDATA[
+			SELECT wm.id as id, wm.`name` as `name`, wm.parentId as parentId, wm.url as url, wa.admin_id as userId 
+			FROM menu_3 as wm LEFT JOIN admin_permission wa ON wm.id = wa.permission_id AND wa.admin_id = #{userId}
+		]]>
+    </select>  
+    
+    <select id="queryThreeMenuByRoleIdDao" parameterType="searchDTO" resultType="menuDTO">
+		<![CDATA[
+			SELECT wm.id as id, wm.`name` as `name`, wm.parentId as parentId, wm.url as url, wr.role_id as roleId 
+			FROM menu_3 as wm LEFT JOIN role_permission wr ON wm.id = wr.permission_id AND wr.role_id = #{roleId}
+		]]>
+    </select>  
+    
+    <select id="menuDetailDao" resultType="menuDTO">
+		<choose>
+			<when test="level == 1 or level == '1' ">
+				SELECT id as id, name as name, sort as sort, status as status 
+				FROM menu_1 
+				WHERE id = #{id}
+			</when>
+			<when test="level == 2 or level == '2' ">
+				SELECT id as id, name as name, parentId as parentId, sort as sort, defalutUrl as url, rel, status as status 
+				FROM menu_2 
+				WHERE id = #{id}
+			</when>
+			<when test="level == 3 or level == '3' ">
+				SELECT id as id, name as name, parentId as parentId, url as url, status as status 
+				FROM menu_3 
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				SELECT NOW() AS createTime 
+			</otherwise>
+		</choose>
+    </select>   
+    
+    <select id="queryThreeMenuByUserDao" parameterType="java.lang.Integer" resultType="menuDTO">
+    	<![CDATA[
+    		SELECT id, name, parentId, url  
+    		FROM menu_3 
+    		WHERE id in (select DISTINCT permission_id from admin_permission WHERE admin_id = #{userId}) AND status = 1 
+    	]]>
+    </select>
+    
+    <select id="querySecondMenuByUserDao" parameterType="java.lang.String" resultType="menuDTO">
+    	<![CDATA[
+    		SELECT id, name, parentId, defalutUrl as url, rel 
+    		FROM menu_2 
+    		WHERE id in (${menu2Id}) AND status = 1 
+    		ORDER BY sort ASC
+    	]]>
+    </select>
+    
+    <select id="queryFirstMenuByUserDao" parameterType="java.lang.String" resultType="menuDTO">
+    	<![CDATA[
+    		SELECT id, name 
+    		FROM menu_1 
+    		WHERE id in (${menu1Id}) AND status = 1 
+    		ORDER BY sort ASC
+    	]]>
+    </select>
+    
+    <insert id="saveFirstMenuDao" parameterType="cn.lfy.auth.dto.MenuVO">
+    	<![CDATA[
+    		INSERT INTO menu_1(
+    			`name`,
+    			`sort`,
+    			`status`,
+    			`createTime`
+    		) VALUES (
+    			#{name},
+    			#{sort},
+    			1,
+    			NOW()
+    		)
+    	]]>
+    </insert>
+    
+    <insert id="saveSencondMenuDao" parameterType="cn.lfy.auth.dto.MenuVO">
+    	<![CDATA[
+    		INSERT INTO menu_2(
+    			`name`,
+    			`parentId`,
+    			`sort`,
+    			`status`,
+    			`rel`,
+    			`defalutUrl`
+    		) VALUES (
+    			#{name},
+    			#{parentId},
+    			#{sort},
+    			1,
+    			#{rel},
+    			#{url}
+    		)
+    	]]>
+    </insert>
+    
+    <insert id="saveThreeMenuDao" parameterType="cn.lfy.auth.dto.MenuVO">
+    	<![CDATA[
+    		INSERT INTO menu_3(
+    			`name`,
+    			`parentId`,
+    			`status`,
+    			`url`
+    		) VALUES (
+    			#{name},
+    			#{parentId},
+    			1,
+    			#{url}
+    		)
+    	]]>
+    </insert>    
+    
+    
+    <update id="updateFirstMenuDao" parameterType="cn.lfy.auth.dto.MenuVO">
+    	<![CDATA[
+    		UPDATE menu_1 
+    		SET `name` = #{name},
+    			`sort` = #{sort}
+    		WHERE id = #{id}
+    	]]>
+    </update>
+    
+    <update id="updateSencondMenuDao" parameterType="cn.lfy.auth.dto.MenuVO">
+    	<![CDATA[
+    		UPDATE menu_2 
+    		SET `name` = #{name},
+    			`parentId` = #{parentId},
+    			`sort` = #{sort},
+    			`defalutUrl` = #{url},
+    			`rel` = #{rel}
+    		WHERE id = #{id}
+    	]]>
+    </update>
+    
+    <update id="updateThreeMenuDao" parameterType="cn.lfy.auth.dto.MenuVO">
+    	<![CDATA[
+    		UPDATE menu_3 
+    		SET `name` = #{name},
+    			`parentId` = #{parentId},
+    			`url` = #{url}
+    		WHERE id = #{id}
+    	]]>
+    </update>  
+    
+    <update id="updateMenuStatusDao">
+    	<choose>
+    		<when test="level == 1 or level == '1' ">
+    			UPDATE menu_1 SET `status` = 2 WHERE id = #{id} 
+    		</when>
+    		<when test="level == 2 or level == '2' ">
+    			UPDATE menu_2 SET `status` = 2 WHERE id = #{id} 
+    		</when>
+    		<when test="level == 3 or level == '3' ">
+    			UPDATE menu_3 SET `status` = 2 WHERE id = #{id} 
+    		</when>
+    		<otherwise>
+    			UPDATE menu_1 SET id = #{id} WHERE id = #{id}
+    		</otherwise>		
+    	</choose>
+    </update>   
+    
+	<!-- 列表页查询条件封装 -->
+	<sql id="filter_sql">
+		<if test="queryFilters != null ">
+			<choose>
+				<when test="queryFilters.kwSort == null or queryFilters.kwSort == ''">
+					AND status = 1
+				</when>
+				<otherwise>
+					AND status = #{queryFilters.kwSort} 
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+	
+	<sql id="order_sql">
+		ORDER BY 
+		<if test="sortKey == null or sortKey == '' "> sort </if>
+		<if test="sortKey == 'id' "> id </if>
+		<if test="sortType == null or sortType == '' "> ASC </if>
+		<if test="sortType == 'desc' "> DESC </if>
+		<if test="sortType == 'ASC' "> ASC </if>
+	</sql>
+	
+
+	
+</mapper>

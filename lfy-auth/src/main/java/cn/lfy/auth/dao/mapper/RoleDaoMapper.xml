@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="cn.lfy.auth.dao.admin.RoleDao">
+    
+    
+    <select id="findAll" resultType="role">
+    	<![CDATA[
+    		SELECT 
+    	]]>
+    	<include refid="table_column_list"/>
+    	<![CDATA[
+    		FROM role AS k 
+    	]]>
+    </select>
+    
+    <select id="rolePageDao" parameterType="searchDTO" resultType="role">
+		<![CDATA[
+			SELECT 
+		]]>
+		<include refid="table_column_list"/>
+		<![CDATA[
+			FROM role AS k 
+			WHERE 1 = 1
+		]]>
+		<include refid="filter_sql"/>
+		<include refid="order_sql"/>
+    </select>
+    
+    <select id="getEntityById" parameterType="java.lang.Integer" resultType="role">
+    	<![CDATA[
+    		SELECT 
+    	]]>
+    	<include refid="table_column_list"/>
+    	<![CDATA[
+    		FROM role AS k 
+    		WHERE k.id = #{entityPK}
+    	]]>
+    </select>
+    
+    <select id="getRolePermissionDao" parameterType="java.lang.Long" resultType="java.util.Map">
+		<![CDATA[
+			SELECT GROUP_CONCAT(permission_id) as permissionIds 
+    		FROM role_permission 
+    		WHERE role_id = #{roleId} 
+		]]>    
+    </select>
+    
+    <insert id="save" parameterType="role">
+    	<![CDATA[
+    		INSERT INTO role(
+    			`name`,
+    			`type`,
+    			`description`
+    		) VALUES (
+    			#{name},
+    			#{type},
+    			#{description}
+    		)
+    	]]>
+    </insert>
+    
+    <insert id="addRolePermissionDao">
+    	<![CDATA[
+    		INSERT INTO role_permission (
+    			`role_id`,
+    			`permission_id`
+    		) VALUES (
+    			#{roleId},
+    			#{permissionId}
+    		)
+    	]]>
+    </insert>
+    
+    <update id="update" parameterType="role">
+    	<![CDATA[
+    		UPDATE role 
+    		SET `name` = #{name},
+    			`type` = #{type},
+    			`description` = #{description}
+    		WHERE id = #{id}
+    	]]>
+    </update>
+    
+    <delete id="delete" parameterType="java.lang.Integer">
+    	<![CDATA[
+    		DELETE FROM role 
+    		WHERE id = #{entityPK}
+    	]]>
+    </delete>
+    
+    <delete id="deleteRolePermissionDao" parameterType="java.lang.Long">
+    	<![CDATA[
+    		DELETE FROM role_permission 
+    		WHERE role_id = #{roleId}
+    	]]>
+    </delete>
+	
+	<sql id="table_column_list">
+		<![CDATA[ 
+			k.id as id, k.name as name, k.description as description, k.type as type   
+		]]>
+	</sql>
+	
+	<!-- 列表页查询条件封装 -->
+	<sql id="filter_sql">
+		<if test="queryFilters != null ">
+			<if test="queryFilters.kwType != null and queryFilters.kwType != '' ">
+				AND k.type = #{queryFilters.kwType} 
+			</if>
+		</if>
+	</sql>
+	
+	<sql id="order_sql">
+		ORDER BY 
+		<if test="sortKey == null or sortKey == '' "> k.id </if>
+		<if test="sortKey == 'id' "> k.id </if>
+		<if test="sortType == null or sortType == '' "> DESC </if>
+		<if test="sortType == 'desc' "> DESC </if>
+		<if test="sortType == 'ASC' "> ASC </if>
+	</sql>
+	
+
+	
+</mapper>

@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="cn.lfy.auth.dao.admin.UserDao">
+    
+    
+    <select id="userPageDao" parameterType="searchDTO" resultType="memberUser">
+		<![CDATA[
+			SELECT 
+		]]>
+		<include refid="table_column_list"/>
+		<![CDATA[
+			FROM admin AS k 
+			WHERE 1 = 1
+		]]>
+		<include refid="filter_sql"/>
+		<include refid="order_sql"/>
+    </select>
+    
+    <select id="getEntityById" parameterType="java.lang.Integer" resultType="memberUser">
+    	<![CDATA[
+    		SELECT 
+    	]]>
+    	<include refid="table_column_list"/>
+    	<![CDATA[
+    		FROM admin AS k 
+    		WHERE k.id = #{entityPK}
+    	]]>
+    </select>
+    
+    <select id="getUserPermissionDao" parameterType="java.lang.Integer" resultType="java.util.Map">
+    	<![CDATA[
+    		SELECT GROUP_CONCAT(permission_id) as permissionIds 
+    		FROM admin_permission 
+    		WHERE admin_id = #{userId} 
+    	]]>
+    </select>
+    
+    <select id="queryMemberUserByNameDao" parameterType="java.lang.String" resultType="memberUser">
+     	<![CDATA[
+    		SELECT 
+    	]]>
+    	<include refid="table_column_list"/>
+    	<![CDATA[
+    		FROM admin AS k 
+    		WHERE k.nickname = #{userName}
+    	]]>   	
+    </select>
+    
+    <select id="queryUserBigQnDao" parameterType="java.lang.Integer" resultType="java.util.Map">
+    	<![CDATA[
+    		SELECT GROUP_CONCAT(bigqn_id) as bigqnId 
+    		FROM admin_qn  
+    		WHERE admin_id = #{userId} 
+    	]]>
+    </select>
+    
+    <insert id="save" parameterType="memberUser" keyProperty="id">
+    	<![CDATA[
+    		INSERT INTO admin(
+    			`name`,
+    			`nickname`,
+    			`password`,
+    			`salt`,
+    			`status`,
+    			`roleId`,
+    			`createTime`
+    		) VALUES (
+    			#{userName},
+    			#{nickname},
+    			#{passwd},
+    			#{salt},
+    			#{status},
+    			#{roleId},
+    			NOW()
+    		)
+    	]]>
+    </insert>
+    
+    <insert id="addUserPermissionDao">
+    	<![CDATA[
+    		INSERT INTO admin_permission(
+    			`admin_id`,
+    			`permission_id`
+    		) VALUES (
+    			#{userId},
+    			#{permissionId}
+    		) ON DUPLICATE KEY UPDATE  `admin_id` = #{userId}
+    	]]>
+    </insert>
+    
+    <insert id="addUserQnDao">
+    	<![CDATA[
+    		INSERT INTO admin_qn(
+    			`admin_id`,
+    			`bigqn_id`
+    		) VALUES (
+    			#{userId},
+    			#{qnId}
+     		) ON DUPLICATE KEY UPDATE  `admin_id` = #{userId}
+    	]]>
+    </insert>
+    
+    <update id="update" parameterType="memberUser">
+    	<![CDATA[
+    		UPDATE admin 
+    		SET `name` = #{userName},
+    			`nickname` = #{nickname},
+    			`status` = #{status},
+    			`roleId` = #{roleId}
+    	]]>
+    	<if test="passwd != null and passwd != '' ">
+    		<![CDATA[
+    			,
+    			`password` = #{passwd},
+    			`salt` = #{salt} 
+    		]]>
+    	</if>
+    	<![CDATA[
+    		WHERE id = #{id}
+    	]]>
+    </update>
+    
+	<update id="updateUserStatusDao">
+		<![CDATA[
+			UPDATE admin 
+			SET `status` = #{status}
+			WHERE id = #{userId}
+		]]>
+	</update>
+	
+	<delete id="deleteUserPermissionDao" parameterType="java.lang.Integer">
+		<![CDATA[
+			DELETE FROM admin_permission 
+			WHERE admin_id = #{userId}
+		]]>
+	</delete>
+	
+	<delete id="deleteUserQnDao" parameterType="java.lang.Integer">
+		<![CDATA[
+			DELETE FROM admin_qn 
+			WHERE admin_id = #{userId}
+		]]>
+	</delete>
+	
+	<sql id="table_column_list">
+		<![CDATA[ 
+			k.id as id, k.name as userName, k.nickname as nickname, k.password as passwd, 
+			k.salt as salt, k.status as status, k.createTime as createTime, k.roleId as roleId 
+		]]>
+	</sql>
+	
+	<!-- 列表页查询条件封装 -->
+	<sql id="filter_sql">
+		<if test="queryFilters != null ">
+			<if test="queryFilters.kwName != null and queryFilters.kwName != '' ">
+				AND k.name LIKE '%${queryFilters.kwName}%'
+			</if>
+			<if test="queryFilters.kwStatus != null and queryFilters.kwStatus != '' ">
+				AND k.status = #{queryFilters.kwStatus} 
+			</if>
+		</if>
+	</sql>
+	
+	<sql id="order_sql">
+		ORDER BY 
+		<if test="sortKey == null or sortKey == '' "> k.id </if>
+		<if test="sortKey == 'id' "> k.id </if>
+		<if test="sortType == null or sortType == '' "> DESC </if>
+		<if test="sortType == 'desc' "> DESC </if>
+		<if test="sortType == 'ASC' "> ASC </if>
+	</sql>
+	
+
+	
+</mapper>

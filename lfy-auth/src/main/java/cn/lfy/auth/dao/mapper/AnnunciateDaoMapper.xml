@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="cn.lfy.auth.dao.admin.AnnunciateDao">
+    
+   <select id="annunciatePageDao" parameterType="searchDTO" resultType="annunciate">
+        <![CDATA[
+             SELECT
+        ]]>
+        <include refid="table_column_list"/>
+        <![CDATA[
+          	FROM annunciate
+          	WHERE 1=1
+        ]]>
+        <include refid="filter_sql"/>
+        <include refid="order_sql"/>
+    </select>
+  
+	
+    <insert id="save" parameterType="annunciate">
+       <![CDATA[
+          INSERT INTO annunciate(
+            title,
+            context,
+            outhre,
+            state,
+            createTime
+          ) VALUES (
+            #{title},
+            #{context},
+            #{outhre},
+            #{state},
+           	NOW()
+          )
+       ]]>
+    </insert>
+    
+    <select id='getEntityById' parameterType="Integer" resultType="annunciate" >
+      <![CDATA[
+         SELECT 
+      ]]>
+      <include refid="table_column_list"></include>
+      <![CDATA[
+      
+       	FROM annunciate
+       	
+        WHERE id=#{entityPK}
+      ]]>
+    </select>
+    
+    <update id="update" parameterType="annunciate">
+      <![CDATA[
+       	UPDATE annunciate
+       	SET `title`=#{title},
+           `context`=#{context},
+           `outhre`=#{outhre},
+           `state`=#{state}
+      	WHERE id=#{id}
+      ]]>
+    
+    </update>
+    
+    <update id="updateStatusDao">
+       <![CDATA[
+         UPDATE annunciate
+         SET state=${state}
+         WHERE id=${id}
+       
+       ]]>
+    </update>
+    
+    <select id="getAnnunciateDao" resultType="annunciate">
+        <![CDATA[
+           SELECT 
+        ]]>
+        <include refid="table_column_list"/>
+        <![CDATA[
+           FROM annunciate
+           WHERE state = 1 
+           ORDER BY createTime DESC 
+        ]]>
+    </select>
+    
+    <select id="getAnnunciateListDao" resultType="annunciate">
+        <![CDATA[
+           SELECT
+        ]]>
+         <include refid="table_column_list"/>
+         <![CDATA[
+           FROM annunciate
+           WHERE id=#{id}
+        ]]>
+    
+    </select>
+    
+    <sql id="table_column_list">
+      <![CDATA[
+         id,title,context,outhre,state,createTime
+      ]]>
+    </sql>
+    	
+	<sql id="order_sql">
+		ORDER BY 
+		<if test="sortKey == null or sortKey == '' "> id </if>
+		<if test="sortKey == 'id' ">id </if>
+		<if test="sortType == null or sortType == '' ">DESC </if>
+		<if test="sortType == 'desc' "> DESC </if>
+		<if test="sortType == 'ASC' "> ASC </if>
+	</sql>
+    
+	<!-- 列表页查询条件封装 -->
+	<sql id="filter_sql">
+		<if test="queryFilters != null ">
+			<if test="queryFilters.kwName != null and queryFilters.kwName != '' ">
+				AND title LIKE '%${queryFilters.kwName}%' 
+			</if>
+			<if test="queryFilters.state != null and queryFilters.state != '' ">
+			    AND state=#{queryFilters.state}
+			</if>
+			
+		</if>
+	</sql>
+
+	
+</mapper>

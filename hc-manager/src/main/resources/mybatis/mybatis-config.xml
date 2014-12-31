@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-config.dtd"> 
+<configuration>
+
+	<settings>
+		<setting name="cacheEnabled" value="false" />
+		<setting name="useGeneratedKeys" value="true" />
+		<setting name="defaultExecutorType" value="REUSE" />
+	</settings>
+	
+	<!-- 创建别名 -->
+	<typeAliases>  
+		<typeAlias alias="role" type="cn.lfy.auth.pojo.Role"/>
+		<typeAlias alias="memberUser" type="cn.lfy.auth.pojo.MemberUser"/>
+		<typeAlias alias="annunciate" type="cn.lfy.auth.pojo.Annunciate"/>
+		
+		<typeAlias alias="searchDTO" type="cn.lfy.common.page.dto.SearchDTO"/>
+		<typeAlias alias="menuDTO" type="cn.lfy.auth.dto.MenuDTO"/>
+	</typeAliases>
+
+	<!-- mybatis分页插件 -->
+	<plugins>
+		<plugin interceptor="org.noo.pagination.interceptor.PaginationInterceptor">
+			<property name="dialectClass" value="org.noo.pagination.dialect.db.MySQLDialect" />
+			<property name="sqlPattern" value=".*PageDao.*" />
+			<property name="noPagingPattern" value=".*NoPageDao.*" />
+		</plugin>
+	</plugins>	
+	
+	<!--这里添加的是执行CRUD操作的接口对应的配置文件-->
+	<mappers>
+		<mapper resource="cn/lfy/auth/dao/mapper/RoleDaoMapper.xml"/>
+		<mapper resource="cn/lfy/auth/dao/mapper/UserDaoMapper.xml"/>
+		<mapper resource="cn/lfy/auth/dao/mapper/MenuDaoMapper.xml"/>
+		<mapper resource="cn/lfy/auth/dao/mapper/AnnunciateDaoMapper.xml"/>
+		<mapper resource="cn/lfy/auth/dao/mapper/LogDaoMapper.xml"/>
+	</mappers>
+	  
+	  
+</configuration>
